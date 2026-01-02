@@ -1,4 +1,4 @@
-# agent-monitor
+# agent-limit
 
 Terminal dashboard to monitor Claude Code, Codex, and Gemini CLI usage limits.
 
@@ -7,35 +7,35 @@ Terminal dashboard to monitor Claude Code, Codex, and Gemini CLI usage limits.
 ### Via npm (requires Bun)
 
 ```bash
-npm install -g agent-monitor
+npm install -g agent-limit
 ```
 
 ### Standalone Binary (no dependencies)
 
-Download from [GitHub Releases](https://github.com/AgentWorkforce/monitor/releases):
+Download from [GitHub Releases](https://github.com/AgentWorkforce/limit/releases):
 
 ```bash
 # Apple Silicon
-curl -L https://github.com/AgentWorkforce/monitor/releases/latest/download/agent-monitor-darwin-arm64 -o /usr/local/bin/agent-monitor
-chmod +x /usr/local/bin/agent-monitor
+curl -L https://github.com/AgentWorkforce/limit/releases/latest/download/agent-limit-darwin-arm64 -o /usr/local/bin/agent-limit
+chmod +x /usr/local/bin/agent-limit
 
 # Intel Mac
-curl -L https://github.com/AgentWorkforce/monitor/releases/latest/download/agent-monitor-darwin-x64 -o /usr/local/bin/agent-monitor
-chmod +x /usr/local/bin/agent-monitor
+curl -L https://github.com/AgentWorkforce/limit/releases/latest/download/agent-limit-darwin-x64 -o /usr/local/bin/agent-limit
+chmod +x /usr/local/bin/agent-limit
 ```
 
 ## Quick Start
 
 ```bash
-agent-monitor usage
+agent-limit usage
 ```
 
 ## CLI
 
 | Command | Description |
 |---------|-------------|
-| `agent-monitor usage` | Show usage dashboard |
-| `agent-monitor help` | Show help message |
+| `agent-limit usage` | Show usage dashboard |
+| `agent-limit help` | Show help message |
 
 ## Dashboard Controls
 
@@ -62,7 +62,7 @@ agent-monitor usage
 ## Development
 
 ```bash
-git clone https://github.com/AgentWorkforce/monitor.git
+git clone https://github.com/AgentWorkforce/limit.git
 cd monitor
 bun install
 ```
@@ -98,7 +98,7 @@ Binaries are output to `dist/`.
 
 ## How It Works
 
-agent-monitor reads credentials from standard locations:
+agent-limit reads credentials from standard locations:
 
 - **Claude Code**: macOS Keychain (`Claude Code-credentials`)
 - **Codex**: `~/.codex/auth.json`

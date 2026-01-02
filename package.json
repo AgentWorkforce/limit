@@ -1,18 +1,18 @@
 {
-  "name": "agent-monitor",
-  "version": "0.1.0",
+  "name": "agent-limit",
+  "version": "0.3.0",
   "description": "Terminal dashboard to monitor Claude Code, Codex, and other agent usage limits",
   "type": "module",
   "main": "src/index.tsx",
   "bin": {
-    "agent-monitor": "./bin/cli.tsx"
+    "agent-limit": "./bin/cli.tsx"
   },
   "scripts": {
     "start": "bun run src/index.tsx",
     "dev": "bun --watch run src/index.tsx",
-    "build": "bun build --compile --target=bun-darwin-arm64 ./bin/cli.tsx --outfile=dist/agent-monitor-darwin-arm64 && bun build --compile --target=bun-darwin-x64 ./bin/cli.tsx --outfile=dist/agent-monitor-darwin-x64",
-    "build:arm64": "bun build --compile --target=bun-darwin-arm64 ./bin/cli.tsx --outfile=dist/agent-monitor-darwin-arm64",
-    "build:x64": "bun build --compile --target=bun-darwin-x64 ./bin/cli.tsx --outfile=dist/agent-monitor-darwin-x64"
+    "build": "bun build --compile --target=bun-darwin-arm64 ./bin/cli.tsx --outfile=dist/agent-limit-darwin-arm64 && bun build --compile --target=bun-darwin-x64 ./bin/cli.tsx --outfile=dist/agent-limit-darwin-x64",
+    "build:arm64": "bun build --compile --target=bun-darwin-arm64 ./bin/cli.tsx --outfile=dist/agent-limit-darwin-arm64",
+    "build:x64": "bun build --compile --target=bun-darwin-x64 ./bin/cli.tsx --outfile=dist/agent-limit-darwin-x64"
   },
   "files": [
     "bin",
@@ -36,12 +36,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AgentWorkforce/monitor.git"
+    "url": "git+https://github.com/AgentWorkforce/limit.git"
   },
   "bugs": {
-    "url": "https://github.com/AgentWorkforce/monitor.git/issues"
+    "url": "https://github.com/AgentWorkforce/limit/issues"
   },
-  "homepage": "https://github.com/AgentWorkforce/monitor.git",
+  "homepage": "https://github.com/AgentWorkforce/limit",
   "engines": {
     "bun": ">=1.0.0"
   },
