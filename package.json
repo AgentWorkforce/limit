@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.tsx",
   "bin": {
-    "agent-limit": "./bin/cli.js"
+    "agent-limit": "bin/cli.js"
   },
   "scripts": {
     "start": "bun run src/index.tsx",
