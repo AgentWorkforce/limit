@@ -1,11 +1,11 @@
 {
   "name": "agent-limit",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Terminal dashboard to monitor Claude Code, Codex, and other agent usage limits",
   "type": "module",
   "main": "src/index.tsx",
   "bin": {
-    "agent-limit": "./bin/cli.tsx"
+    "agent-limit": "./bin/cli.js"
   },
   "scripts": {
     "start": "bun run src/index.tsx",
@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/AgentWorkforce/limit",
   "engines": {
-    "bun": ">=1.0.0"
+    "node": ">=18.0.0"
   },
   "os": [
     "darwin"
@@ -51,6 +51,7 @@
   "dependencies": {
     "@opentui/core": "^0.1.67",
     "@opentui/react": "^0.1.63",
+    "bun": "^1.2.0",
     "react": "^19.0.0"
   },
   "devDependencies": {

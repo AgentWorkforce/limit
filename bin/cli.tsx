@@ -1,54 +1,44 @@
 #!/usr/bin/env bun
 /** @jsxImportSource @opentui/react */
 
+import { createCliRenderer } from "@opentui/core";
 import { createRoot } from "@opentui/react";
 import { App } from "../src/App";
-
-function resetTerminal() {
-  process.stdout.write("\x1b[?1049l");
-  process.stdout.write("\x1b[?25h");
-  process.stdout.write("\x1b[0m");
-  process.stdout.write("\x1b[?1000l");
-  process.stdout.write("\x1b[?1002l");
-  process.stdout.write("\x1b[?1003l");
-  process.stdout.write("\x1b[?1006l");
-  process.stdout.write("\x1b[?2004l");
-}
 
 const command = process.argv[2];
 
 if (command === "usage") {
-  let root: ReturnType<typeof createRoot> | null = null;
+  const renderer = await createCliRenderer({
+    exitOnCtrlC: false,
+  });
+
+  const root = createRoot(renderer);
   
   const cleanup = () => {
-    if (root) {
-      root.unmount();
-    }
-    resetTerminal();
+    root.unmount();
+    renderer.destroy();
     process.exit(0);
   };
 
   process.on("SIGINT", cleanup);
   process.on("SIGTERM", cleanup);
-  process.on("exit", resetTerminal);
   
-  root = createRoot(process.stdout, { hideCursor: true });
   root.render(<App onExit={cleanup} />);
 } else if (command === "help" || command === "--help" || command === "-h" || !command) {
   console.log(`
-agent-monitor
+agent-limit
 
 Monitor AI agent CLI usage limits in real-time.
 
 Install:
-  npm install -g agent-monitor
+  npm install -g agent-limit
 
 Quick Start:
-  agent-monitor usage
+  agent-limit usage
 
 CLI:
-  agent-monitor usage    Show usage dashboard
-  agent-monitor help     Show this help message
+  agent-limit usage    Show usage dashboard
+  agent-limit help     Show this help message
 
 Dashboard Controls:
   q    Quit
@@ -56,6 +46,6 @@ Dashboard Controls:
 `);
 } else {
   console.error(`Unknown command: ${command}`);
-  console.error(`Run 'agent-monitor help' for usage.`);
+  console.error(`Run 'agent-limit help' for usage.`);
   process.exit(1);
 }
