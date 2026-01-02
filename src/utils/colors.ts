@@ -18,7 +18,6 @@ export function getStatusColor(status: string): string {
 export const PROVIDER_COLORS = {
   claude: "#d97706",
   codex: "#10b981",
-  gemini: "#3b82f6",
 } as const;
 
 export const UI_COLORS = {

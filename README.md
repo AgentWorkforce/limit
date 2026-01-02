@@ -1,6 +1,6 @@
 # agent-limit
 
-Terminal dashboard to monitor Claude Code, Codex, and Gemini CLI usage limits.
+Terminal dashboard to monitor Claude Code and Codex usage limits.
 
 ## Install
 
@@ -46,7 +46,7 @@ agent-limit usage
 
 ## Features
 
-- Real-time usage tracking for Claude Code, Codex, and Gemini CLI
+- Real-time usage tracking for Claude Code and Codex
 - Trajectory markers showing if you're ahead or behind your usage pace
 - Auto-refresh every 60 seconds
 - Color-coded usage indicators
@@ -57,7 +57,6 @@ agent-limit usage
 |----------|--------|-------------|
 | Claude Code | Full support | macOS Keychain + Anthropic API |
 | Codex | Full support | `~/.codex/auth.json` + OpenAI API |
-| Gemini CLI | Static limits | `~/.gemini/settings.json` |
 
 ## Development
 
@@ -102,7 +101,6 @@ agent-limit reads credentials from standard locations:
 
 - **Claude Code**: macOS Keychain (`Claude Code-credentials`)
 - **Codex**: `~/.codex/auth.json`
-- **Gemini**: `~/.gemini/settings.json`
 
 It then fetches usage data from each provider's API and displays it in a unified dashboard.
 

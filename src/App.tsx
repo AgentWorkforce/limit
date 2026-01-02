@@ -13,7 +13,6 @@ export function App({ onExit }: AppProps) {
   const [providers, setProviders] = useState<ProviderStatus[]>([
     { provider: "claude", status: "loading", metrics: [] },
     { provider: "codex", status: "loading", metrics: [] },
-    { provider: "gemini", status: "loading", metrics: [] },
   ]);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(true);

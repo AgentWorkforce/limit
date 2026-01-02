@@ -82,25 +82,3 @@ export async function getCodexCredentials(): Promise<CodexCredentials | null> {
     return null;
   }
 }
-
-export interface GeminiSettings {
-  authType?: "google" | "api_key" | "vertex";
-  apiKey?: string;
-  project?: string;
-}
-
-export async function getGeminiSettings(): Promise<GeminiSettings | null> {
-  try {
-    const homedir = process.env.HOME || "~";
-    const file = Bun.file(`${homedir}/.gemini/settings.json`);
-    
-    if (!(await file.exists())) {
-      return null;
-    }
-
-    const content = await file.json();
-    return content;
-  } catch {
-    return null;
-  }
-}

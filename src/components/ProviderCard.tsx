@@ -10,7 +10,6 @@ function getProviderDisplayName(provider: string): string {
   switch (provider) {
     case "claude": return "CLAUDE CODE";
     case "codex": return "CODEX";
-    case "gemini": return "GEMINI CLI";
     default: return provider.toUpperCase();
   }
 }
