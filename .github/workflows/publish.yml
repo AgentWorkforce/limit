@@ -20,6 +20,14 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Update npm and configure
+        run: |
+          npm install -g npm@latest
+          echo "npm version: $(npm --version)"
+          echo "node version: $(node --version)"
+          echo "OIDC URL set: ${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"
+          cat ~/.npmrc 2>/dev/null || echo "No .npmrc"
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -48,7 +56,10 @@ jobs:
 
       - name: Publish to npm
         if: steps.version.outputs.changed == 'true'
-        run: npm publish --access public --provenance
+        run: |
+          # Ensure no auth config exists (let npm use OIDC)
+          rm -f ~/.npmrc
+          npm publish --access public --provenance
 
       - name: Create GitHub Release
         if: steps.version.outputs.changed == 'true'
