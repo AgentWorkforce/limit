@@ -1,6 +1,6 @@
 {
   "name": "agent-limit",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Terminal dashboard to monitor Claude Code, Codex, and other agent usage limits",
   "type": "module",
   "main": "src/index.tsx",

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useKeyboard } from "@opentui/react";
 import { Header, Footer, Dashboard } from "./components";
 import { fetchAllProviders, type ProviderStatus } from "./providers";

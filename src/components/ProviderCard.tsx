@@ -1,3 +1,4 @@
+import React from "react";
 import type { ProviderStatus } from "../providers/types";
 import { PROVIDER_COLORS, getStatusColor } from "../utils/colors";
 import { ProgressBar } from "./ProgressBar";

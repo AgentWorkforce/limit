@@ -1,3 +1,4 @@
+import React from "react";
 import { getUsageColor } from "../utils/colors";
 
 interface ProgressBarProps {
