@@ -14,9 +14,10 @@ if (command === "usage") {
 
   const root = createRoot(renderer);
   
-  const cleanup = () => {
+  const cleanup = async () => {
     root.unmount();
-    renderer.destroy();
+    await renderer.destroy();
+    process.stdout.write("\x1b[?25h"); // Ensure cursor is visible
     process.exit(0);
   };
 

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-01-02
+
+### Fixed
+
+- Terminal cleanup on exit - raw ANSI escape codes no longer dumped when pressing q or Ctrl+C
+
 ## [0.7.0] - 2026-01-02
 
 ### Added
@@ -93,7 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standalone binary builds for macOS (arm64 and x64)
 - npm package distribution
 
-[Unreleased]: https://github.com/AgentWorkforce/limit/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/AgentWorkforce/limit/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/AgentWorkforce/limit/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/AgentWorkforce/limit/compare/v0.6.2...v0.7.0
 [0.6.2]: https://github.com/AgentWorkforce/limit/compare/v0.6.0...v0.6.2
 [0.6.0]: https://github.com/AgentWorkforce/limit/compare/v0.5.1...v0.6.0
