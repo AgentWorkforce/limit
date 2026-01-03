@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-/** @jsxImportSource @opentui/react */
 
+import React from "react";
 import { createCliRenderer } from "@opentui/core";
 import { createRoot } from "@opentui/react";
 import { App } from "../src/App";
