@@ -1,28 +1,14 @@
 import {
   getClaudeCredentials,
-  refreshClaudeToken,
-  saveClaudeCredentials,
   type ClaudeCredentials,
 } from "../utils/keychain";
 import { timeUntil } from "../utils/time";
 import type { ProviderStatus } from "./types";
 
-const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000;
-
 interface ClaudeUsageResponse {
   five_hour: { utilization: number; resets_at: string | null } | null;
   seven_day: { utilization: number; resets_at: string | null } | null;
   seven_day_opus: { utilization: number; resets_at: string | null } | null;
-}
-
-async function tryRefreshCredentials(
-  credentials: ClaudeCredentials
-): Promise<ClaudeCredentials | null> {
-  const refreshed = await refreshClaudeToken(credentials.refreshToken);
-  if (refreshed) {
-    await saveClaudeCredentials(refreshed);
-  }
-  return refreshed;
 }
 
 async function fetchUsageWithCredentials(
@@ -41,7 +27,7 @@ async function fetchUsageWithCredentials(
 }
 
 export async function fetchClaudeUsage(): Promise<ProviderStatus> {
-  let credentials = await getClaudeCredentials();
+  const credentials = await getClaudeCredentials();
 
   if (!credentials) {
     return {
@@ -52,24 +38,8 @@ export async function fetchClaudeUsage(): Promise<ProviderStatus> {
     };
   }
 
-  const tokenExpiresSoon = credentials.expiresAt < Date.now() + TOKEN_REFRESH_BUFFER_MS;
-  if (tokenExpiresSoon) {
-    const refreshed = await tryRefreshCredentials(credentials);
-    if (refreshed) {
-      credentials = refreshed;
-    }
-  }
-
   try {
-    let response = await fetchUsageWithCredentials(credentials);
-
-    if (response.status === 401) {
-      const refreshed = await tryRefreshCredentials(credentials);
-      if (refreshed) {
-        credentials = refreshed;
-        response = await fetchUsageWithCredentials(credentials);
-      }
-    }
+    const response = await fetchUsageWithCredentials(credentials);
 
     if (!response.ok) {
       if (response.status === 401) {

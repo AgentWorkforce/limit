@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-01-03
+
+### Removed
+
+- Automatic OAuth token refresh for Claude - was corrupting tokens stored in Keychain
+
 ## [0.7.1] - 2026-01-02
 
 ### Fixed
@@ -99,7 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standalone binary builds for macOS (arm64 and x64)
 - npm package distribution
 
-[Unreleased]: https://github.com/AgentWorkforce/limit/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/AgentWorkforce/limit/compare/v0.7.2...HEAD
+[0.7.2]: https://github.com/AgentWorkforce/limit/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/AgentWorkforce/limit/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/AgentWorkforce/limit/compare/v0.6.2...v0.7.0
 [0.6.2]: https://github.com/AgentWorkforce/limit/compare/v0.6.0...v0.6.2
