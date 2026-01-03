@@ -1,6 +1,13 @@
-import { getClaudeCredentials } from "../utils/keychain";
+import {
+  getClaudeCredentials,
+  refreshClaudeToken,
+  saveClaudeCredentials,
+  type ClaudeCredentials,
+} from "../utils/keychain";
 import { timeUntil } from "../utils/time";
 import type { ProviderStatus } from "./types";
+
+const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000;
 
 interface ClaudeUsageResponse {
   five_hour: { utilization: number; resets_at: string | null } | null;
@@ -8,8 +15,33 @@ interface ClaudeUsageResponse {
   seven_day_opus: { utilization: number; resets_at: string | null } | null;
 }
 
+async function tryRefreshCredentials(
+  credentials: ClaudeCredentials
+): Promise<ClaudeCredentials | null> {
+  const refreshed = await refreshClaudeToken(credentials.refreshToken);
+  if (refreshed) {
+    await saveClaudeCredentials(refreshed);
+  }
+  return refreshed;
+}
+
+async function fetchUsageWithCredentials(
+  credentials: ClaudeCredentials
+): Promise<Response> {
+  return fetch("https://api.anthropic.com/api/oauth/usage", {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "User-Agent": "monitor/1.0.0",
+      Authorization: `Bearer ${credentials.accessToken}`,
+      "anthropic-beta": "oauth-2025-04-20",
+    },
+  });
+}
+
 export async function fetchClaudeUsage(): Promise<ProviderStatus> {
-  const credentials = await getClaudeCredentials();
+  let credentials = await getClaudeCredentials();
 
   if (!credentials) {
     return {
@@ -20,17 +52,24 @@ export async function fetchClaudeUsage(): Promise<ProviderStatus> {
     };
   }
 
+  const tokenExpiresSoon = credentials.expiresAt < Date.now() + TOKEN_REFRESH_BUFFER_MS;
+  if (tokenExpiresSoon) {
+    const refreshed = await tryRefreshCredentials(credentials);
+    if (refreshed) {
+      credentials = refreshed;
+    }
+  }
+
   try {
-    const response = await fetch("https://api.anthropic.com/api/oauth/usage", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "monitor/1.0.0",
-        Authorization: `Bearer ${credentials.accessToken}`,
-        "anthropic-beta": "oauth-2025-04-20",
-      },
-    });
+    let response = await fetchUsageWithCredentials(credentials);
+
+    if (response.status === 401) {
+      const refreshed = await tryRefreshCredentials(credentials);
+      if (refreshed) {
+        credentials = refreshed;
+        response = await fetchUsageWithCredentials(credentials);
+      }
+    }
 
     if (!response.ok) {
       if (response.status === 401) {

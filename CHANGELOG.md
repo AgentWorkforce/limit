@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-01-02
+
+### Added
+
+- Automatic OAuth token refresh for Claude Code credentials
+- Proactive token refresh before expiration (5-minute buffer)
+- Retry with refreshed token on 401 responses
+
 ## [0.4.1] - 2026-01-02
 
 ### Removed
@@ -61,7 +69,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standalone binary builds for macOS (arm64 and x64)
 - npm package distribution
 
-[Unreleased]: https://github.com/AgentWorkforce/limit/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/AgentWorkforce/limit/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/AgentWorkforce/limit/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/AgentWorkforce/limit/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/AgentWorkforce/limit/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/AgentWorkforce/limit/compare/v0.2.0...v0.3.0
