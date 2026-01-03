@@ -27,6 +27,46 @@ if (command === "usage") {
 } else if (command === "version" || command === "--version" || command === "-v") {
   const pkg = await import("../package.json");
   console.log(pkg.version);
+} else if (command === "update") {
+  const pkg = await import("../package.json");
+  const currentVersion = pkg.version;
+  
+  console.log(`Current version: ${currentVersion}`);
+  console.log("Checking for updates...");
+  
+  try {
+    const response = await fetch("https://registry.npmjs.org/agent-limit/latest");
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.status}`);
+    }
+    const data = await response.json() as { version: string };
+    const latestVersion = data.version;
+    
+    if (latestVersion === currentVersion) {
+      console.log(`✓ You're on the latest version (${currentVersion})`);
+    } else {
+      console.log(`New version available: ${latestVersion}`);
+      console.log("\nUpdating...");
+      
+      const proc = Bun.spawn(["npm", "install", "-g", "agent-limit@latest"], {
+        stdout: "inherit",
+        stderr: "inherit",
+      });
+      
+      const exitCode = await proc.exited;
+      
+      if (exitCode === 0) {
+        console.log(`\n✓ Updated to ${latestVersion}`);
+      } else {
+        console.error("\n✗ Update failed. Try running manually:");
+        console.error("  npm install -g agent-limit@latest");
+        process.exit(1);
+      }
+    }
+  } catch (error) {
+    console.error("Failed to check for updates:", error instanceof Error ? error.message : error);
+    process.exit(1);
+  }
 } else if (command === "help" || command === "--help" || command === "-h" || !command) {
   console.log(`
 agent-limit
@@ -41,6 +81,7 @@ Quick Start:
 
 CLI:
   agent-limit usage    Show usage dashboard
+  agent-limit update   Update to latest version
   agent-limit version  Show version
   agent-limit help     Show this help message
 
