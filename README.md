@@ -35,6 +35,7 @@ agent-limit usage
 | Command | Description |
 |---------|-------------|
 | `agent-limit usage` | Show usage dashboard |
+| `agent-limit version` | Show version |
 | `agent-limit help` | Show help message |
 
 ## Dashboard Controls

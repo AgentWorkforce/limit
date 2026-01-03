@@ -24,6 +24,9 @@ if (command === "usage") {
   process.on("SIGTERM", cleanup);
   
   root.render(<App onExit={cleanup} />);
+} else if (command === "version" || command === "--version" || command === "-v") {
+  const pkg = await import("../package.json");
+  console.log(pkg.version);
 } else if (command === "help" || command === "--help" || command === "-h" || !command) {
   console.log(`
 agent-limit
@@ -38,6 +41,7 @@ Quick Start:
 
 CLI:
   agent-limit usage    Show usage dashboard
+  agent-limit version  Show version
   agent-limit help     Show this help message
 
 Dashboard Controls:
