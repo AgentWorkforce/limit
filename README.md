@@ -1,126 +1,77 @@
-# agent-limit
+# Agent Limit
 
-Terminal dashboard to monitor Claude Code and Codex usage limits.
+A native macOS **menu bar app** that shows your **Claude Code** and **Codex**
+usage limits as burndown charts — so you can see at a glance whether you're
+ahead of or behind your usage pace before you hit a wall.
 
-## Quickstart
+## What it does
 
-```bash
-npm install -g agent-limit
-agent-limit usage
-```
+- Lives in the menu bar and shows your highest current usage as a percentage.
+- Click it to open a popover with a **burndown chart** for each limit window
+  (e.g. 5-hour and weekly):
+  - A dashed line shows the *ideal* pace (a straight burn from 100% to 0% over
+    the window).
+  - A solid blue line shows your *actual* remaining quota over time.
+  - The gap between them is shaded **green** when you're **under pace** (you
+    have headroom) or **red** when you're **over pace** (you'll hit the limit
+    early).
+- Switch between **Codex** and **Claude** from the provider picker.
+- Auto-refreshes every 60 seconds; refresh manually any time.
 
-## Example
+## How it reads your usage
 
-```
-[███████░░░░|░░░░░░░░░] 30% ↓12%
-            ^ you should be at 42%, but you're at 30% (12% under pace)
-```
+The app reuses the credentials the official CLIs already store on your Mac — it
+never asks you to log in again:
 
-- `↓X%` (green) = under pace, you have headroom
-- `↑X%` (red) = over pace, might hit limits early
+| Provider | Credentials | Endpoint |
+|----------|-------------|----------|
+| Claude   | `Claude Code-credentials` login-keychain item (written by Claude Code) | `https://api.anthropic.com/api/oauth/usage` |
+| Codex    | `~/.codex/auth.json` (written by the Codex CLI) | `https://chatgpt.com/backend-api/wham/usage` |
 
-## Features
+If a provider isn't authenticated, run `claude` or `codex` once to log in.
 
-- Real-time usage tracking for Claude Code and Codex
-- Trajectory markers showing if you're ahead or behind your usage pace
-- Auto-refresh every 60 seconds
-- Color-coded usage indicators
+The first time it reads the Claude keychain item, macOS may prompt you to allow
+access — choose **Always Allow**.
 
-## CLI Reference
+## Build & run
 
-| Command | Description |
-|---------|-------------|
-| `agent-limit usage` | Show usage dashboard |
-| `agent-limit version` | Show version |
-| `agent-limit help` | Show help message |
-
-### Dashboard Controls
-
-| Key | Action |
-|-----|--------|
-| `q` | Quit |
-| `r` | Refresh |
-
-## Supported Providers
-
-| Provider | Status | Data Source |
-|----------|--------|-------------|
-| Claude Code | Full support | macOS Keychain + Anthropic API |
-| Codex | Full support | `~/.codex/auth.json` + OpenAI API |
-
-## How It Works
-
-agent-limit reads credentials from standard locations:
-
-- **Claude Code**: macOS Keychain (`Claude Code-credentials`)
-- **Codex**: `~/.codex/auth.json`
-
-It then fetches usage data from each provider's API and displays it in a unified dashboard.
-
-## Installation Options
-
-### Via npm
+Requires macOS 13+ and the Swift toolchain (Xcode or the Command Line Tools).
 
 ```bash
-npm install -g agent-limit
+./build.sh
+open dist/AgentLimit.app
 ```
 
-### Standalone Binary (no dependencies)
-
-Download from [GitHub Releases](https://github.com/AgentWorkforce/limit/releases):
+To install it permanently:
 
 ```bash
-# Apple Silicon
-curl -L https://github.com/AgentWorkforce/limit/releases/latest/download/agent-limit-darwin-arm64 -o /usr/local/bin/agent-limit
-chmod +x /usr/local/bin/agent-limit
-
-# Intel Mac
-curl -L https://github.com/AgentWorkforce/limit/releases/latest/download/agent-limit-darwin-x64 -o /usr/local/bin/agent-limit
-chmod +x /usr/local/bin/agent-limit
+cp -R dist/AgentLimit.app /Applications/
 ```
 
-## Requirements
-
-- macOS (uses Keychain for credential storage)
-- Active CLI authentication for providers you want to monitor
-
-## Development
+For development you can also run straight from the package:
 
 ```bash
-git clone https://github.com/AgentWorkforce/limit.git
-cd monitor
-bun install
+swift run
 ```
 
-Run in development mode with hot reload:
+## Project layout
 
-```bash
-bun run dev
 ```
-
-Run directly:
-
-```bash
-bun run start
+Package.swift                 Swift package manifest
+App/Info.plist                Bundle metadata (LSUIElement → menu-bar-only app)
+build.sh                      Builds AgentLimit.app
+Sources/AgentLimit/
+  AgentLimitApp.swift         App entry point + menu bar label
+  ContentView.swift           Popover UI
+  BurndownChartView.swift     Swift Charts burndown rendering
+  UsageViewModel.swift        Loading, refresh timer, view state
+  Providers.swift             Claude + Codex usage fetchers
+  Credentials.swift           Reads keychain / auth.json
+  UsageHistory.swift          Persists samples for the usage curve
+  Burndown.swift              Turns samples into chart data
+  Models.swift                Shared types
 ```
-
-> **Note:** In dev mode, use `q` to quit cleanly. If you Ctrl-C and see garbled output, run `reset` to restore your terminal.
-
-### Building Standalone Binaries
-
-Build binaries that don't require Bun:
-
-```bash
-# Build for all macOS architectures
-bun run build
-
-# Build for specific architecture
-bun run build:arm64   # Apple Silicon
-bun run build:x64     # Intel
-```
-
-Binaries are output to `dist/`.
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
