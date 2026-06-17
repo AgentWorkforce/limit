@@ -9,7 +9,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "AgentLimit",
-            path: "Sources/AgentLimit"
+            path: "Sources/AgentLimit",
+            resources: [
+                .process("Resources")
+            ]
         )
     ]
 )

@@ -15,7 +15,8 @@ ahead of or behind your usage pace before you hit a wall.
   - The gap between them is shaded **green** when you're **under pace** (you
     have headroom) or **red** when you're **over pace** (you'll hit the limit
     early).
-- Switch between **Codex** and **Claude** from the provider picker.
+- Switch between **Codex** and **Claude** with brand-icon buttons
+  ([lobe-icons](https://github.com/lobehub/lobe-icons)).
 - Auto-refreshes every 60 seconds; refresh manually any time.
 
 ## How it reads your usage
@@ -62,15 +63,19 @@ App/Info.plist                Bundle metadata (LSUIElement → menu-bar-only app
 build.sh                      Builds AgentLimit.app
 Sources/AgentLimit/
   AgentLimitApp.swift         App entry point + menu bar label
-  ContentView.swift           Popover UI
-  BurndownChartView.swift     Swift Charts burndown rendering
+  ContentView.swift           Popover UI + provider icon picker
+  BurndownChartView.swift     Swift Charts burndown card
+  BrandIcon.swift             Loads/tints the lobe-icons SVGs
   UsageViewModel.swift        Loading, refresh timer, view state
   Providers.swift             Claude + Codex usage fetchers
   Credentials.swift           Reads keychain / auth.json
   UsageHistory.swift          Persists samples for the usage curve
   Burndown.swift              Turns samples into chart data
   Models.swift                Shared types
+  Resources/                  claude.svg, codex.svg (lobe-icons, MIT)
 ```
+
+Brand icons are from [lobe-icons](https://github.com/lobehub/lobe-icons) (MIT).
 
 ## License
 

@@ -17,36 +17,23 @@ struct ContentView: View {
     // MARK: Header
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 8) {
-                Text("Provider:")
-                    .foregroundStyle(.secondary)
-
-                Picker("Provider", selection: providerBinding) {
-                    ForEach(ProviderName.allCases) { provider in
-                        Text(provider.displayName).tag(provider)
-                    }
-                }
-                .labelsHidden()
-                .fixedSize()
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 10) {
+                providerPicker
 
                 Spacer()
 
-                Button {
+                iconButton("arrow.clockwise", help: "Refresh now") {
                     Task { await viewModel.refresh() }
-                } label: {
-                    Image(systemName: "arrow.clockwise")
                 }
-                .buttonStyle(.borderless)
-                .help("Refresh now")
+                .rotationEffect(.degrees(viewModel.isLoading ? 360 : 0))
+                .animation(viewModel.isLoading
+                    ? .linear(duration: 1).repeatForever(autoreverses: false)
+                    : .default, value: viewModel.isLoading)
 
-                Button {
+                iconButton("power", help: "Quit Agent Limit") {
                     NSApp.terminate(nil)
-                } label: {
-                    Image(systemName: "power")
                 }
-                .buttonStyle(.borderless)
-                .help("Quit Agent Limit")
             }
 
             Text(subtitle)
@@ -55,11 +42,42 @@ struct ContentView: View {
         }
     }
 
-    private var providerBinding: Binding<ProviderName> {
-        Binding(
-            get: { viewModel.selectedProvider },
-            set: { viewModel.select($0) }
+    /// Segmented control of brand icons, one per provider.
+    private var providerPicker: some View {
+        HStack(spacing: 4) {
+            ForEach(ProviderName.allCases) { provider in
+                let isSelected = provider == viewModel.selectedProvider
+                Button {
+                    viewModel.select(provider)
+                } label: {
+                    ProviderIcon(provider: provider, size: 17)
+                        .foregroundStyle(isSelected ? provider.brandColor : Color.secondary)
+                        .frame(width: 30, height: 26)
+                        .background(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(isSelected ? provider.brandColor.opacity(0.16) : .clear)
+                        )
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help(provider.displayName)
+            }
+        }
+        .padding(3)
+        .background(
+            Capsule(style: .continuous)
+                .fill(Color.primary.opacity(0.06))
         )
+    }
+
+    private func iconButton(_ symbol: String, help: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .help(help)
     }
 
     private var subtitle: String {
@@ -100,11 +118,14 @@ struct ContentView: View {
     }
 
     private func chartsView(plan: String?) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
-            if let plan {
-                Text("\(plan) plan")
-                    .font(.caption)
+        VStack(alignment: .leading, spacing: 12) {
+            if let plan, !plan.isEmpty {
+                Text("\(plan.prefix(1).capitalized + plan.dropFirst()) plan")
+                    .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Capsule().fill(Color.primary.opacity(0.06)))
             }
             ForEach(Array(viewModel.charts.enumerated()), id: \.offset) { _, item in
                 if let data = item.data {

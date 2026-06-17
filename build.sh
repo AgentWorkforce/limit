@@ -23,6 +23,12 @@ mkdir -p "$APP_DIR/Contents/Resources"
 cp "$BIN_PATH/$APP_NAME" "$APP_DIR/Contents/MacOS/$APP_NAME"
 cp "App/Info.plist" "$APP_DIR/Contents/Info.plist"
 
+# Bundle SwiftPM resource bundles (brand icons) next to the executable so
+# Bundle.module can find them.
+for bundle in "$BIN_PATH"/*.bundle; do
+    [ -e "$bundle" ] && cp -R "$bundle" "$APP_DIR/Contents/Resources/"
+done
+
 echo "Built $APP_DIR"
 echo
 echo "Launch it with:  open \"$APP_DIR\""
