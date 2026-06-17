@@ -22,16 +22,8 @@ struct MenuBarLabel: View {
     @ObservedObject var viewModel: UsageViewModel
 
     var body: some View {
-        HStack(spacing: 3) {
-            Image(nsImage: flameImage)
-                .renderingMode(.original)
-            Text(text)
-        }
-    }
-
-    private var text: String {
-        guard let usage = viewModel.headlineUsage else { return "—" }
-        return "\(usage)%"
+        Image(nsImage: flameImage)
+            .renderingMode(.original)
     }
 
     /// Outline flame while on pace; a solid "hot" flame once over pace.
@@ -45,15 +37,13 @@ struct MenuBarLabel: View {
         return 11 + CGFloat(min(1, usage / 100)) * 6
     }
 
-    /// Green when there's plenty of headroom, warming through yellow/orange as
-    /// usage climbs, and red whenever the window is off its target pace.
+    /// Warms from orange toward red as usage climbs, and is full red whenever the
+    /// window is off its target pace.
     private var flameColor: Color {
         if viewModel.headlineOffTarget { return .red }
-        switch viewModel.headlineUsage ?? 0 {
-        case ..<50: return .green
-        case ..<80: return .yellow
-        default: return .orange
-        }
+        let t = min(1, Double(viewModel.headlineUsage ?? 0) / 100)
+        // orange #FF8C00 → red #FF3B30
+        return Color(red: 1.0, green: 0.55 - 0.32 * t, blue: 0.19 * t)
     }
 
     /// Rasterizes the colored flame. `isTemplate = false` stops the menu bar from
