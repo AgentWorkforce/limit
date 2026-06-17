@@ -19,7 +19,7 @@ struct ClaudeProvider: UsageProvider {
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("AgentLimit/1.0", forHTTPHeaderField: "User-Agent")
+        request.setValue("monitor/1.0.0", forHTTPHeaderField: "User-Agent")
         request.setValue("Bearer \(credentials.accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("oauth-2025-04-20", forHTTPHeaderField: "anthropic-beta")
 
