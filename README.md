@@ -39,10 +39,13 @@ access — choose **Always Allow**.
 
 ## Install
 
-Download the latest **`AgentLimit.dmg`** from the
-[Releases](../../releases) page, open it, and drag **Agent Limit** to
-**Applications**. The build is signed and notarized, so it launches without
-Gatekeeper warnings. It runs as a menu bar item (no Dock icon).
+Download the latest DMG, open it, and drag **Agent Limit** to **Applications**:
+
+> **[⬇ AgentLimit-arm64.dmg](../../releases/latest/download/AgentLimit-arm64.dmg)**
+> (Apple Silicon)
+
+The build is signed and notarized, so it launches without Gatekeeper warnings.
+It runs as a menu bar item (no Dock icon).
 
 Or build it yourself (below).
 
@@ -91,31 +94,39 @@ Brand icons are from [lobe-icons](https://github.com/lobehub/lobe-icons) (MIT).
 
 ## Releasing
 
-Releases are signed, notarized, and published as a DMG to GitHub Releases by the
-[`Release`](.github/workflows/release.yml) workflow whenever a `v*` tag is pushed:
+Set up the same way as [Pear](../../../pear): signed + notarized DMG published to
+GitHub Releases, using the **same repository secrets** so one set of Apple
+credentials covers both repos.
 
-```bash
-git tag v1.0.0 && git push origin v1.0.0
-```
+To cut a release, go to **Actions → "Release (macOS)" → Run workflow**. The
+[workflow](.github/workflows/release.yml):
 
-`release.sh` does the same locally (build → `codesign` with a hardened runtime →
-`notarytool` → `stapler` → DMG). It needs an Apple **Developer ID Application**
-certificate and notarization credentials.
+1. computes a **date-based version** `YEAR.MONTH.N` (N = the next release this
+   month) and tag `vYEAR.MONTH.N` — nothing is committed;
+2. generates release notes from the commits since the last tag;
+3. signs with a hardened runtime, notarizes via the App Store Connect API key,
+   staples, and builds `AgentLimit-arm64.dmg`;
+4. publishes the release as **latest**, so the stable
+   `releases/latest/download/AgentLimit-arm64.dmg` link always points at it.
 
-CI requires these repository **secrets** (Settings → Secrets and variables →
-Actions):
+`release.sh` runs the same build/sign/notarize/package steps locally (set
+`VERSION` and the Apple env vars listed at the top of the script).
+
+Required repository **secrets** (Settings → Secrets and variables → Actions) —
+identical to Pear's:
 
 | Secret | What it is |
 |--------|------------|
-| `MACOS_CERTIFICATE` | base64 of your Developer ID Application cert exported as `.p12` (`base64 -i cert.p12 \| pbcopy`) |
-| `MACOS_CERTIFICATE_PWD` | password you set when exporting the `.p12` |
-| `KEYCHAIN_PASSWORD` | any string — used for the throwaway CI keychain |
-| `SIGNING_IDENTITY` | e.g. `Developer ID Application: Your Name (TEAMID)` |
-| `APPLE_ID` | your Apple ID email (for notarization) |
-| `APPLE_TEAM_ID` | your 10-character Developer Team ID |
-| `APPLE_APP_PASSWORD` | an [app-specific password](https://support.apple.com/en-us/102654) |
+| `CSC_LINK` | base64 of your Developer ID Application cert exported as `.p12` (`base64 -i cert.p12 \| pbcopy`) |
+| `CSC_KEY_PASSWORD` | password you set when exporting the `.p12` |
+| `APPLE_API_KEY_BASE64` | base64 of your App Store Connect API key (`AuthKey_XXXX.p8`) |
+| `APPLE_API_KEY_ID` | the API key ID |
+| `APPLE_API_ISSUER` | the API key issuer UUID |
 
-Keep `CFBundleShortVersionString` in `App/Info.plist` in sync with the tag.
+The throwaway CI keychain password is generated per-run, and the signing
+identity is auto-detected from the imported certificate — no extra secrets.
+
+> Apple Silicon only (arm64), matching the CI runner.
 
 ## License
 
