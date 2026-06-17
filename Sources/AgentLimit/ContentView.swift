@@ -9,25 +9,21 @@ struct ContentView: View {
             header
             Divider()
             content
-            Divider()
-            footer
         }
         .padding(16)
         .frame(width: 380)
+        .background(quitShortcut)
     }
 
-    /// A low-key footer with the only quit affordance (the app is menu-bar-only,
-    /// so there's no Dock icon or app menu to quit from).
-    private var footer: some View {
-        HStack {
-            Spacer()
-            Button("Quit") { NSApp.terminate(nil) }
-                .buttonStyle(.plain)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .keyboardShortcut("q")
-                .help("Quit Agent Limit")
-        }
+    /// Registers ⌘Q while the popover is open. The app is menu-bar-only (no Dock
+    /// icon or app menu), so there's no system Quit item — this is an invisible
+    /// handler with no on-screen button.
+    private var quitShortcut: some View {
+        Button(action: { NSApp.terminate(nil) }) { EmptyView() }
+            .keyboardShortcut("q", modifiers: .command)
+            .frame(width: 0, height: 0)
+            .opacity(0)
+            .accessibilityHidden(true)
     }
 
     // MARK: Header
