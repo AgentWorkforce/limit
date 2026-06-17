@@ -62,6 +62,12 @@ struct ProviderStatus {
 
 /// ISO-8601 parsing that tolerates fractional seconds (Anthropic) and plain
 /// internet date-time strings.
+///
+/// Anthropic returns microsecond precision with an explicit offset, e.g.
+/// `2026-06-17T05:19:59.253508+00:00`. `ISO8601DateFormatter` only reliably
+/// parses up to 3 fractional digits, so we fall back to stripping the
+/// fractional component entirely (sub-second precision is irrelevant for reset
+/// times).
 enum DateParsing {
     private static let fractional: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
@@ -76,6 +82,15 @@ enum DateParsing {
     }()
 
     static func date(from string: String) -> Date? {
-        fractional.date(from: string) ?? plain.date(from: string)
+        if let date = fractional.date(from: string) { return date }
+        if let date = plain.date(from: string) { return date }
+
+        // Strip fractional seconds (e.g. ".253508") and retry.
+        if let range = string.range(of: #"\.\d+"#, options: .regularExpression) {
+            var stripped = string
+            stripped.removeSubrange(range)
+            if let date = plain.date(from: stripped) { return date }
+        }
+        return nil
     }
 }
