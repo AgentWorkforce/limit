@@ -14,9 +14,9 @@ struct AgentLimitApp: App {
     }
 }
 
-/// The label shown in the menu bar: a flame that grows with the highest current
-/// usage, fills (turns "hot") when that window is burning off its target pace,
-/// and is colored by severity. The flame is rendered to a non-template image so
+/// The label shown in the menu bar: a fixed-size flame colored by the highest
+/// current usage (orange→red) that fills (turns "hot") when that window is
+/// burning off its target pace. The flame is rendered to a non-template image so
 /// the menu bar preserves its color instead of flattening it to monochrome.
 struct MenuBarLabel: View {
     @ObservedObject var viewModel: UsageViewModel
@@ -31,11 +31,9 @@ struct MenuBarLabel: View {
         viewModel.headlineOffTarget ? "flame.fill" : "flame"
     }
 
-    /// The flame literally grows with usage: ~11pt empty → ~17pt near the limit.
-    private var flameSize: CGFloat {
-        let usage = Double(viewModel.headlineUsage ?? 0)
-        return 11 + CGFloat(min(1, usage / 100)) * 6
-    }
+    /// Fixed size — a usage-varying size would shift the menu bar layout. Usage
+    /// is conveyed by color and fill instead.
+    private let flameSize: CGFloat = 15
 
     /// Warms from orange toward red as usage climbs, and is full red whenever the
     /// window is off its target pace.
