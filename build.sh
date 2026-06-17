@@ -22,6 +22,7 @@ mkdir -p "$APP_DIR/Contents/Resources"
 
 cp "$BIN_PATH/$APP_NAME" "$APP_DIR/Contents/MacOS/$APP_NAME"
 cp "App/Info.plist" "$APP_DIR/Contents/Info.plist"
+cp "App/AppIcon.icns" "$APP_DIR/Contents/Resources/AppIcon.icns"
 
 # Bundle SwiftPM resource bundles (brand icons) next to the executable so
 # Bundle.module can find them.

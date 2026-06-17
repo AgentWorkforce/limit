@@ -9,9 +9,25 @@ struct ContentView: View {
             header
             Divider()
             content
+            Divider()
+            footer
         }
         .padding(16)
         .frame(width: 380)
+    }
+
+    /// A low-key footer with the only quit affordance (the app is menu-bar-only,
+    /// so there's no Dock icon or app menu to quit from).
+    private var footer: some View {
+        HStack {
+            Spacer()
+            Button("Quit") { NSApp.terminate(nil) }
+                .buttonStyle(.plain)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .keyboardShortcut("q")
+                .help("Quit Agent Limit")
+        }
     }
 
     // MARK: Header

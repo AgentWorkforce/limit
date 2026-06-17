@@ -75,7 +75,10 @@ swift run
 ```
 Package.swift                 Swift package manifest
 App/Info.plist                Bundle metadata (LSUIElement → menu-bar-only app)
+App/AppIcon.icns              App icon (regenerate with scripts/make-icon.sh)
 build.sh                      Builds AgentLimit.app
+release.sh                    Signs, notarizes & packages the DMG
+scripts/                      Icon generator
 Sources/AgentLimit/
   AgentLimitApp.swift         App entry point + menu bar label
   ContentView.swift           Popover UI + provider icon picker

@@ -8,6 +8,8 @@
     <string>Agent Limit</string>
     <key>CFBundleExecutable</key>
     <string>AgentLimit</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
     <string>com.agentworkforce.agentlimit</string>
     <key>CFBundlePackageType</key>
