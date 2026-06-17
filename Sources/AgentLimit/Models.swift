@@ -29,6 +29,7 @@ enum ProviderStatusType {
     case error
     case unavailable
     case loading
+    case rateLimited
 }
 
 /// A single usage window (e.g. the 5-hour or weekly limit).
@@ -57,6 +58,14 @@ struct ProviderStatus {
 
     static func failure(_ provider: ProviderName, _ message: String) -> ProviderStatus {
         ProviderStatus(provider: provider, status: .error, plan: nil, metrics: [], message: message)
+    }
+
+    /// The usage endpoint rate-limited the poll (HTTP 429). Transient — callers
+    /// should keep showing the last known data and back off rather than surface
+    /// this as a hard error.
+    static func rateLimited(_ provider: ProviderName) -> ProviderStatus {
+        ProviderStatus(provider: provider, status: .rateLimited, plan: nil, metrics: [],
+                       message: "Usage API is rate-limiting requests. Showing the last update.")
     }
 }
 

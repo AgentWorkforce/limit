@@ -2,7 +2,8 @@ import SwiftUI
 import AppKit
 
 extension ProviderName {
-    /// Brand accent color used for the provider's selected icon.
+    /// Brand accent color — tints the monochrome marks and fills the selected
+    /// provider's chip.
     var brandColor: Color {
         switch self {
         case .claude: return Color(red: 0.85, green: 0.47, blue: 0.34)   // Claude coral #D97757
@@ -14,39 +15,69 @@ extension ProviderName {
     private var iconResource: String {
         switch self {
         case .claude: return "claude"
-        case .codex: return "codex"
+        case .codex: return "openai"
         }
     }
 
-    /// Loads the brand SVG as a template image so it can be tinted. Falls back to
-    /// `nil` if the asset can't be loaded (the view substitutes an SF Symbol).
+    /// Color applied to a monochrome `currentColor` mark, or `nil` to render the
+    /// SVG's own colors as-is.
+    private var iconTint: NSColor? {
+        switch self {
+        case .claude: return nil      // claude.svg carries its own coral fill
+        case .codex: return .white    // OpenAI mark rendered in white
+        }
+    }
+
+    /// Loads the bundled lobe-icons SVG: self-colored marks (Claude) render as-is,
+    /// monochrome marks (OpenAI) are tinted to `iconTint`. Falls back to `nil` if
+    /// the asset can't be loaded (the view substitutes an SF Symbol).
     var brandImage: NSImage? {
-        BrandIconCache.shared.image(named: iconResource)
+        BrandIconCache.shared.image(named: iconResource, tint: iconTint)
     }
 
     /// SF Symbol fallback when the SVG can't be rendered.
     var fallbackSymbol: String {
         switch self {
         case .claude: return "sparkle"
-        case .codex: return "chevron.left.forwardslash.chevron.right"
+        case .codex: return "brain"
         }
     }
 }
 
-/// Caches tinted-template `NSImage`s loaded from the bundled SVG resources.
+/// Caches `NSImage`s loaded from the bundled SVG resources. A `nil` tint renders
+/// the SVG's own colors; a non-nil tint recolors the opaque pixels to it while
+/// preserving the glyph's transparency (for monochrome marks).
 private final class BrandIconCache {
     static let shared = BrandIconCache()
     private var cache: [String: NSImage] = [:]
 
-    func image(named name: String) -> NSImage? {
-        if let cached = cache[name] { return cached }
+    func image(named name: String, tint: NSColor?) -> NSImage? {
+        let key = "\(name):\(tint?.hashValue ?? 0)"
+        if let cached = cache[key] { return cached }
         guard let url = Bundle.module.url(forResource: name, withExtension: "svg"),
-              let image = NSImage(contentsOf: url) else {
+              let base = NSImage(contentsOf: url) else {
             return nil
         }
-        image.isTemplate = true
-        cache[name] = image
-        return image
+        guard let tint else {
+            base.isTemplate = false
+            cache[key] = base
+            return base
+        }
+        // The lobe-icons SVGs declare `width="1em"`, so `base.size` is 1×1 —
+        // rasterize at a fixed high resolution instead (the image is later scaled
+        // down to ~17pt by the view).
+        let size = NSSize(width: 64, height: 64)
+        let tinted = NSImage(size: size)
+        let rect = NSRect(origin: .zero, size: size)
+        tinted.lockFocus()
+        base.draw(in: rect)
+        tint.set()
+        // `.sourceAtop` recolors only the already-drawn (opaque) pixels.
+        rect.fill(using: .sourceAtop)
+        tinted.unlockFocus()
+        tinted.isTemplate = false
+        cache[key] = tinted
+        return tinted
     }
 }
 
@@ -61,7 +92,7 @@ struct ProviderIcon: View {
             if let image = provider.brandImage {
                 Image(nsImage: image)
                     .resizable()
-                    .renderingMode(.template)
+                    .renderingMode(.original)
                     .interpolation(.high)
             } else {
                 Image(systemName: provider.fallbackSymbol)

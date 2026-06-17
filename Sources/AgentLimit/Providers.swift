@@ -31,6 +31,9 @@ struct ClaudeProvider: UsageProvider {
             if http.statusCode == 401 {
                 return .failure(.claude, "Token expired. Run 'claude' to re-authenticate.")
             }
+            if http.statusCode == 429 {
+                return .rateLimited(.claude)
+            }
             guard http.statusCode == 200 else {
                 return .failure(.claude, "API error: \(http.statusCode)")
             }
@@ -89,6 +92,9 @@ struct CodexProvider: UsageProvider {
             }
             if http.statusCode == 401 {
                 return .failure(.codex, "Token expired. Run 'codex' to re-authenticate.")
+            }
+            if http.statusCode == 429 {
+                return .rateLimited(.codex)
             }
             guard http.statusCode == 200 else {
                 return .failure(.codex, "API error: \(http.statusCode)")

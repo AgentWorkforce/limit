@@ -18,23 +18,7 @@ struct ContentView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 10) {
-                providerPicker
-
-                Spacer()
-
-                iconButton("arrow.clockwise", help: "Refresh now") {
-                    Task { await viewModel.refresh() }
-                }
-                .rotationEffect(.degrees(viewModel.isLoading ? 360 : 0))
-                .animation(viewModel.isLoading
-                    ? .linear(duration: 1).repeatForever(autoreverses: false)
-                    : .default, value: viewModel.isLoading)
-
-                iconButton("power", help: "Quit Agent Limit") {
-                    NSApp.terminate(nil)
-                }
-            }
+            providerPicker
 
             Text(subtitle)
                 .font(.caption)
@@ -51,7 +35,7 @@ struct ContentView: View {
                     viewModel.select(provider)
                 } label: {
                     ProviderIcon(provider: provider, size: 17)
-                        .foregroundStyle(isSelected ? provider.brandColor : Color.secondary)
+                        .opacity(isSelected ? 1 : 0.55)
                         .frame(width: 30, height: 26)
                         .background(
                             RoundedRectangle(cornerRadius: 7, style: .continuous)
@@ -68,16 +52,6 @@ struct ContentView: View {
             Capsule(style: .continuous)
                 .fill(Color.primary.opacity(0.06))
         )
-    }
-
-    private func iconButton(_ symbol: String, help: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: symbol)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.secondary)
-        }
-        .buttonStyle(.plain)
-        .help(help)
     }
 
     private var subtitle: String {
@@ -103,6 +77,8 @@ struct ContentView: View {
             switch status.status {
             case .unavailable, .error:
                 messageView(status.message ?? "Usage is unavailable.")
+            case .rateLimited:
+                noticeView(status.message ?? "Rate-limited. Retrying shortly.")
             default:
                 if status.metrics.isEmpty {
                     messageView("No active limit windows reported.")
@@ -119,6 +95,9 @@ struct ContentView: View {
 
     private func chartsView(plan: String?) -> some View {
         VStack(alignment: .leading, spacing: 12) {
+            if let notice = viewModel.notice {
+                noticeView(notice)
+            }
             if let plan, !plan.isEmpty {
                 Text("\(plan.prefix(1).capitalized + plan.dropFirst()) plan")
                     .font(.caption.weight(.medium))
@@ -147,6 +126,21 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 24)
+    }
+
+    /// A low-key, informational banner (e.g. transient rate-limit notice).
+    private func noticeView(_ message: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "clock.arrow.circlepath")
+                .foregroundStyle(.secondary)
+            Text(message)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.primary.opacity(0.05)))
     }
 }
 
